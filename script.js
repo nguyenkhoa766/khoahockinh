@@ -127,7 +127,8 @@ function initForm() {
                 <div style="text-align:center;padding:40px 20px;">
                     <div style="font-size:64px;margin-bottom:16px;">🎉</div>
                     <h3 style="font-size:22px;font-weight:800;margin-bottom:12px;color:#22c55e;">ĐĂNG KÝ THÀNH CÔNG!</h3>
-                    <p style="font-size:15px;color:rgba(255,255,255,0.7);">Cảm ơn <strong>${data.fullname}</strong>!<br>Chúng tôi sẽ liên hệ bạn qua số <strong>${data.phone}</strong> trong thời gian sớm nhất.</p>
+                    <p style="font-size:15px;color:rgba(255,255,255,0.7);">Cảm ơn <strong>${data.fullname}</strong>!<br>Vui lòng tham gia nhóm Zalo bên dưới để nhận thông tin chi tiết.</p>
+                    <a href="https://zalo.me/g/cahxss4sbh6ysjv7lggv" target="_blank" style="display:inline-block;margin-top:20px;padding:12px 24px;background:#0068ff;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;">THAM GIA NHÓM ZALO</a>
                 </div>
             `;
         } catch (err) {
