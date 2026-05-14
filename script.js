@@ -31,15 +31,15 @@ function initCountdown() {
 /* ===== SCROLL ANIMATIONS ===== */
 function initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry, i) => {
+        entries.forEach((entry) => {
             if (entry.isIntersecting) {
-                setTimeout(() => entry.target.classList.add('visible'), i * 100);
+                entry.target.classList.add('visible');
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.1 });
 
-    document.querySelectorAll('.pain-card, .curriculum-card, .objection-item').forEach(el => observer.observe(el));
+    document.querySelectorAll('.fade-up-element').forEach(el => observer.observe(el));
 }
 
 /* ===== STICKY CTA ===== */
@@ -65,6 +65,117 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+/* ===== 1. CURSOR SPOTLIGHT ===== */
+function initCursorSpotlight() {
+    const spotlight = document.getElementById('cursor-spotlight');
+    if (!spotlight) return;
+
+    let mouseX = 0, mouseY = 0;
+    let spotX = 0, spotY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    // Smooth follow with requestAnimationFrame
+    function animate() {
+        spotX += (mouseX - spotX) * 0.08;
+        spotY += (mouseY - spotY) * 0.08;
+        spotlight.style.left = spotX + 'px';
+        spotlight.style.top = spotY + 'px';
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+/* ===== 2. ANIMATED COUNTERS ===== */
+function initAnimatedCounters() {
+    const counters = document.querySelectorAll('[data-count]');
+    if (!counters.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    counters.forEach(el => observer.observe(el));
+}
+
+function animateCounter(el) {
+    const target = parseInt(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const format = el.dataset.format || '';
+    const duration = 2000; // ms
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+
+        if (format === 'price') {
+            el.textContent = current.toLocaleString('vi-VN') + suffix;
+        } else {
+            el.textContent = current + suffix;
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    requestAnimationFrame(update);
+}
+
+/* ===== 3. 3D CARD TILT ===== */
+function initCardTilt() {
+    const cards = document.querySelectorAll('.tilt-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -8; // max 8deg
+            const rotateY = ((x - centerX) / centerX) * 8;
+
+            card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+            card.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+        });
+
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'transform 0.15s ease-out';
+        });
+    });
+}
+
+/* ===== 4. SCROLL PROGRESS BAR ===== */
+function initScrollProgress() {
+    const bar = document.getElementById('scroll-progress');
+    if (!bar) return;
+
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        bar.style.width = progress + '%';
+    }, { passive: true });
+}
 
 /* ===== FORM SUBMISSION TO GOOGLE SHEETS ===== */
 function initForm() {
@@ -139,10 +250,16 @@ function initForm() {
     });
 }
 
-/* ===== INIT ===== */
+/* ===== INIT ALL ===== */
 document.addEventListener('DOMContentLoaded', () => {
     initCountdown();
     initScrollAnimations();
     initStickyCTA();
     initForm();
+
+    // Premium effects
+    initCursorSpotlight();
+    initAnimatedCounters();
+    initCardTilt();
+    initScrollProgress();
 });
